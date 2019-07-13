@@ -1,0 +1,14 @@
+# Julia Packaging
+*.jl.cov
+*.jl.*.cov
+*.jl.mem
+
+# AircraftDesignTools temps
+*.gif
+temps
+temp*
+*.vtk
+*.jld
+
+# Jupyter notebook temps
+.ipynb_checkpoints

@@ -9,7 +9,12 @@
 """
 module AircraftDesignTools
 
+export ShapeCuboid, ShapeCyl, ShapeSphere, volume, area, centroid, volumeunits,
+        areaunits, centroidunits
+export ObjectVol, ObjectSurf, cg, mass, cgunits, massunits
+
 # ------------ GENERIC MODULES -------------------------------------------------
+import ForwardDiff
 
 # ------------ FLOW LAB MODULES ------------------------------------------------
 
@@ -28,7 +33,7 @@ const RType = Union{Float64,                    # Concrete real types
                     }
 
 # ------------ HEADERS ---------------------------------------------------------
-for header_name in []
+for header_name in ["shapes", "objects"]
   include("AircraftDesignTools_"*header_name*".jl")
 end
 
