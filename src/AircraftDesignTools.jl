@@ -9,9 +9,11 @@
 """
 module AircraftDesignTools
 
-export ShapeCuboid, ShapeCyl, ShapeSphere, volume, area, centroid, volumeunits,
-        areaunits, centroidunits
-export ObjectVol, ObjectSurf, cg, mass, cgunits, massunits
+export ShapeCuboid, ShapeCyl, ShapeSphere, ShapePoint,
+        volume, area, centroid,
+        volumeunits, areaunits, centroidunits,
+        ObjectVol, ObjectSurf, ObjectPoint,
+        cg, mass, cgunits, massunits
 
 # ------------ GENERIC MODULES -------------------------------------------------
 import ForwardDiff
@@ -33,7 +35,7 @@ const RType = Union{Float64,                    # Concrete real types
                     }
 
 # ------------ HEADERS ---------------------------------------------------------
-for header_name in ["shapes", "objects"]
+for header_name in ["shapes", "objects", "components"]
   include("AircraftDesignTools_"*header_name*".jl")
 end
 

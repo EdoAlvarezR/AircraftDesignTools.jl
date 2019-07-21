@@ -1,6 +1,6 @@
 #=##############################################################################
 # DESCRIPTION
-    Definition of shapes (basic data structure)
+    Definition of shapes (basic data structure).
 
 # AUTHORSHIP
   * Author    : Eduardo J. Alvarez
@@ -94,10 +94,24 @@ ShapeSphere(r) = ShapeSphere(r,"m")
 volume(self::ShapeSphere) = 4/3*pi*self.r^3
 area(self::ShapeSphere) = 4*pi*self.r^2
 centroid(self::ShapeSphere{T}) where {T} = (zero(T), zero(T), zero(T))
+
+
+"""
+    `ShapePoint(units::String)`
+A volume-less point
+"""
+immutable ShapePoint{T<:Real} <: AbstractShape{T}
+    units::String
+end
+ShapePoint() = ShapePoint{Float64}("")
+volume(self::ShapePoint{T}) where {T} = zero(T)
+area(self::ShapePoint{T}) where {T} = zero(T)
+centroid(self::ShapePoint{T}) where {T} = (zero(T), zero(T), zero(T))
+
 ##### END OF SHAPE IMPLEMENTATIONS #############################################
 
 
 
 
 # Declares implementations of AbstractShape
-const ShapeTypes = Union{ShapeCuboid, ShapeCyl, ShapeSphere}
+const ShapeTypes = Union{ShapeCuboid, ShapeCyl, ShapeSphere, ShapePoint}
