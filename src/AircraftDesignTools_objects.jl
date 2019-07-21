@@ -9,13 +9,11 @@
   * License   : AGPL-3.0
 =###############################################################################
 
-
-
 ################################################################################
 # ABSTACT OBJECT TYPE
 ################################################################################
 """
-  Implementations of AbstractObject are expected to have the following fields.
+  Implementations of AbstractObject are expected to have the following fields
   * `shape::ShapeType`      : Shape of object.
   * `density::Real`         : density of object.
   * `dunits::String`        : Units of density.
@@ -23,15 +21,12 @@
   and the following functions
 
 ```julia
-    "Returns a tuple (x1, x2, x3) with the coordinates of the object center of
-    gravity"
-    cg(self::ObjectType) = ...
 
-    "Return the mass of the object"
-    mass(self::ObjectType) = ...
+    "Returns the mass-normalizing value (volume, area, etc)"
+    _v(::Type{O}, shape::S) where {O<:ObjectPoint, S<:ShapeTypes} = ...
 
-    "Returns the units of the spatial density"
-    _vunits(self::ObjectType) = ...
+    "Returns the mass-normalizing units"
+    _vunits(::Type{O}, shape::S) where {O<:ObjectPoint, S<:ShapeTypes} = ...
 ```
 """
 abstract type AbstractObject{S, R} end
@@ -73,6 +68,7 @@ function massunits(obj::O) where {O<:AbstractObject}
     end
 end
 ##### COMMON INTERNAL FUNCTIONS  ###############################################
+Base.length(obj::AbstractObject) = 1
 
 ##### END OF ABSTRACT OBJECT ###################################################
 
@@ -129,7 +125,7 @@ const ObjectTypes = Union{ObjectVol, ObjectSurf, ObjectPoint}
 
 
 
-##### FUNCTIONS  ###############################################################
+##### UTILITIES  ###############################################################
 """
     `object_from_mass(shape::S, mass::R; objecttype::Type{O}=ObjectVol{S, R},
 massunits::String="kg") where {S<:ShapeTypes, R<:RType, O<:ObjectTypes}`
@@ -144,3 +140,4 @@ function object_from_mass(shape::S, mass::R; objecttype::Type{O}=ObjectVol{S, R}
     dunits = length(vunits) == 0 ? massunits : massunits*"/"*vunits
     return objecttype(shape, mass/_v(objecttype, shape), dunits)
 end
+################################################################################

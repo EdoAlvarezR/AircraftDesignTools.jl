@@ -9,11 +9,17 @@
 """
 module AircraftDesignTools
 
-export ShapeCuboid, ShapeCyl, ShapeSphere, ShapePoint,
+        # Shapes
+export  ShapeCuboid, ShapeCyl, ShapeSphere, ShapePoint,
         volume, area, centroid,
         volumeunits, areaunits, centroidunits,
+        # Objects
         ObjectVol, ObjectSurf, ObjectPoint,
-        cg, mass, cgunits, massunits
+        cg, mass, cgunits, massunits,
+        object_from_mass,
+        # Components
+        Component, System, clone
+
 
 # ------------ GENERIC MODULES -------------------------------------------------
 import ForwardDiff

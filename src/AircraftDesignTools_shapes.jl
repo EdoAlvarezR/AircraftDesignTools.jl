@@ -13,7 +13,7 @@
 # ABSTACT SHAPE TYPE
 ################################################################################
 """
-  Implementations of AbstractShape are expected to have the following fields.
+  Implementations of AbstractShape are expected to have the following fields
   * `units::String `     : Units of the length dimensions.
 
   and the following functions
@@ -109,9 +109,6 @@ area(self::ShapePoint{T}) where {T} = zero(T)
 centroid(self::ShapePoint{T}) where {T} = (zero(T), zero(T), zero(T))
 
 ##### END OF SHAPE IMPLEMENTATIONS #############################################
-
-
-
 
 # Declares implementations of AbstractShape
 const ShapeTypes = Union{ShapeCuboid, ShapeCyl, ShapeSphere, ShapePoint}
