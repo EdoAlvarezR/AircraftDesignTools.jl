@@ -193,12 +193,11 @@ _show(io, mime, cmp::AbstractComponent; optargs...) = (
 # COMPONENT IMPLEMENTATION TYPES
 ################################################################################
 """
-    `Component(name::String, object::ObjectTypes; optargs...) <:
-AbstractComponent`
+    `Component(name::String, object::ObjectTypes; optargs...) <: AbstractComponent`
 
 Defines an object placed at a location and orientation in space.
 
-# OPTIONAL ARGUMENTS
+**OPTIONAL ARGUMENTS**
 * `id::Union{Int,String}`       : Component number identifier
 * `O::Array{Real, 1}`           : Origin of object coordinate system
 * `Oaxis::Array{Real, 2}`       : Orientation of coordinate sytem
@@ -246,13 +245,12 @@ Component(name, subcomponents;
 
 
 """
-    `System(name::String, components::Array{C, 1}; optargs...) where
-{C<:AbstractComponent} <: AbstractComponent`
+    `System(name::String, components::Array{AbstractComponent, 1}; optargs...) <: AbstractComponent`
 
-Defines a system make out of components. This allows for recursive definition of
+Defines a system made out of components. This allows for recursive definition of
 systems holding other systems as subcomponents.
 
-# OPTIONAL ARGUMENTS
+**OPTIONAL ARGUMENTS**
 * `id::Union{Int,String}`       : System number identifier
 * `O::Array{Real, 1}`           : Origin of system coordinate system
 * `Oaxis::Array{Real, 2}`       : Orientation of coordinate sytem

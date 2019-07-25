@@ -127,8 +127,8 @@ const ObjectTypes = Union{ObjectVol, ObjectSurf, ObjectPoint}
 
 ##### UTILITIES  ###############################################################
 """
-    `object_from_mass(shape::S, mass::R; objecttype::Type{O}=ObjectVol{S, R},
-massunits::String="kg") where {S<:ShapeTypes, R<:RType, O<:ObjectTypes}`
+    `object_from_mass(shape::AbstractShape, mass::Real;
+    objecttype=ObjectVol{S, R}, massunits="kg")`
 
 Returns an object of type `objecttype` where the density is calculated from the
 given mass and shape.
