@@ -18,11 +18,14 @@ export  ShapeCuboid, ShapeCyl, ShapeSphere, ShapePoint,
         cg, mass, cgunits, massunits,
         object_from_mass,
         # Components
-        Component, System, clone
+        Component, System, clone,
+        displaybom
 
 
 # ------------ GENERIC MODULES -------------------------------------------------
 import ForwardDiff
+import DataFrames
+import DataStructures.OrderedDict
 
 # ------------ FLOW LAB MODULES ------------------------------------------------
 
