@@ -27,6 +27,9 @@
 
     "Returns a tuple (x1, x2, x3) with the coordinates of the shape centroid"
     centroid(self::ShapeType) = ...
+
+    "Generates a vtk file with this shape"
+    save_vtk(self::ShapeType, filename; optargs...) = ...
 ```
 """
 abstract type AbstractShape{T} end
@@ -65,6 +68,11 @@ volume(self::ShapeCuboid) = self.x1*self.x2*self.x3
 area(self::ShapeCuboid) = 2*(self.x1*self.x2 + self.x2*self.x3 + self.x3*self.x1)
 centroid(self::ShapeCuboid) = (self.x1/2, self.x2/2, self.x3/2)
 
+function save_vtk(self::ShapeCuboid, filename; optargs...)
+    gt.generate_vtk_cuboid(filename, self.x1, self.x2, self.x3;
+                                                optargs...)
+end
+
 """
     `ShapeCyl(r::Real, h::Real, units::String)`
 Cylindrical shape
@@ -81,6 +89,9 @@ area(self::ShapeCyl) = 2*(pi*self.r^2) + 2*pi*self.r*self.h
 "Cylinder: axis goes in the direction of x3, circular section lays on x1 and x2"
 centroid(self::ShapeCyl{T}) where {T} = (zero(T), zero(T), self.h/2)
 
+function save_vtk(self::ShapeCyl, filename; optargs...)
+    gt.generate_vtk_cyl(filename, self.r, self.h; optargs...)
+end
 """
     `ShapeSphere(r::Real, units::String)`
 Spherical shape
@@ -95,6 +106,9 @@ volume(self::ShapeSphere) = 4/3*pi*self.r^3
 area(self::ShapeSphere) = 4*pi*self.r^2
 centroid(self::ShapeSphere{T}) where {T} = (zero(T), zero(T), zero(T))
 
+function save_vtk(self::ShapeSphere, filename; optargs...)
+    gt.generate_vtk_sph(filename, self.r; optargs...)
+end
 
 """
     `ShapePoint(units::String)`
@@ -107,6 +121,10 @@ ShapePoint() = ShapePoint{Float64}("")
 volume(self::ShapePoint{T}) where {T} = zero(T)
 area(self::ShapePoint{T}) where {T} = zero(T)
 centroid(self::ShapePoint{T}) where {T} = (zero(T), zero(T), zero(T))
+
+function save_vtk(self::ShapePoint, filename; optargs...)
+    gt.generate_vtk_point(filename, self.r; optargs...)
+end
 
 ##### END OF SHAPE IMPLEMENTATIONS #############################################
 
