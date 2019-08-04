@@ -19,4 +19,4 @@ Pkg.clone("git@github.com:EdoAlvarezR/AircraftDesignTools.jl.git")
   * License   : AGPL-3.0
 
 
-  <img src="docs/vid/aircraft01.gif" alt="Vid here" width="800px">
+  <img src="docs/img/aircraft01.gif" alt="Vid here" width="800px">
