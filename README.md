@@ -12,5 +12,10 @@ Pkg.clone("git@github.com:EdoAlvarezR/AircraftDesignTools.jl.git")
 # Authorship
   * Author    : Eduardo J. Alvarez
   * Email     : Edo.AlvarezR@gmail.com
-  * Created   : July 2019 
+  * Created   : July 2019
   * License   : AGPL-3.0
+
+
+  <img src="docs/vid/aircraft01.gif" alt="Vid here" style="width: 800px;"/>
+  <img src="docs/img/aircraft_twinboom01.png" alt="Pic here" width="800px">
+  <img src="docs/img/aircraft_twinboom00.png" alt="Pic here" width="800px">

@@ -10,7 +10,7 @@
 module AircraftDesignTools
 
         # Shapes
-export  ShapeCuboid, ShapeCyl, ShapeSphere, ShapePoint,
+export  ShapeCuboid, ShapeCyl, ShapeSphere, ShapePoint, ShapeSurfGrid,
         volume, area, centroid,
         volumeunits, areaunits, centroidunits,
         # Objects

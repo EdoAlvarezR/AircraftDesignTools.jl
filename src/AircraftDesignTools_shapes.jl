@@ -73,6 +73,7 @@ function save_vtk(self::ShapeCuboid, filename; optargs...)
                                                 optargs...)
     return filename*".vtk"
 end
+# ------------------------------------------------------------------------------
 
 """
     `ShapeCyl(r::Real, h::Real, units::String)`
@@ -94,6 +95,8 @@ function save_vtk(self::ShapeCyl, filename; optargs...)
     gt.generate_vtk_cyl(filename, self.r, self.h; optargs...)
     return filename*".vtk"
 end
+# ------------------------------------------------------------------------------
+
 """
     `ShapeSphere(r::Real, units::String)`
 Spherical shape
@@ -112,6 +115,7 @@ function save_vtk(self::ShapeSphere, filename; optargs...)
     gt.generate_vtk_sph(filename, self.r; optargs...)
     return filename*".vtk"
 end
+# ------------------------------------------------------------------------------
 
 """
     `ShapePoint(units::String)`
@@ -129,8 +133,30 @@ function save_vtk(self::ShapePoint, filename; optargs...)
     gt.generate_vtk_point(filename, self.r; optargs...)
     return filename*".vtk"
 end
+# ------------------------------------------------------------------------------
 
+"""
+    `ShapeSurfGrid(grid::gt.GridTriangleSurface, units::String)`
+Arbitrary shape created as a surface grid of triangular cells through
+`GeometricTools` package.
+"""
+immutable ShapeSurfGrid{T} <: AbstractShape{T}
+    grid::gt.GridTriangleSurface
+    units::String
+end
+ShapeSurfGrid(grid::gt.GridTriangleSurface, units::String) = ShapeSurfGrid{Float64}(grid, units)
+ShapeSurfGrid(grid::gt.GridTriangleSurface) = ShapeSurfGrid{Float64}(grid, "m")
+
+volume(self::ShapeSurfGrid) = gt.get_volume(self.grid)
+area(self::ShapeSurfGrid) = gt.get_area(self.grid)
+centroid(self::ShapeSurfGrid) = gt.get_centroid(self.grid)
+
+function save_vtk(self::ShapeSurfGrid, filename; optargs...)
+    gt.save(self.grid, filename; optargs...)
+    return filename*".vtk"
+end
 ##### END OF SHAPE IMPLEMENTATIONS #############################################
 
 # Declares implementations of AbstractShape
-const ShapeTypes = Union{ShapeCuboid, ShapeCyl, ShapeSphere, ShapePoint}
+const ShapeTypes = Union{ShapeCuboid, ShapeCyl, ShapeSphere, ShapePoint,
+                                                                  ShapeSurfGrid}
