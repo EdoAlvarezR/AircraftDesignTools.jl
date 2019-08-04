@@ -28,7 +28,7 @@
     "Returns a tuple (x1, x2, x3) with the coordinates of the shape centroid"
     centroid(self::ShapeType) = ...
 
-    "Generates a vtk file with this shape"
+    "Generates a vtk file with this shape and returns the name of the vtk file"
     save_vtk(self::ShapeType, filename; optargs...) = ...
 ```
 """
@@ -71,6 +71,7 @@ centroid(self::ShapeCuboid) = (self.x1/2, self.x2/2, self.x3/2)
 function save_vtk(self::ShapeCuboid, filename; optargs...)
     gt.generate_vtk_cuboid(filename, self.x1, self.x2, self.x3;
                                                 optargs...)
+    return filename*".vtk"
 end
 
 """
@@ -91,6 +92,7 @@ centroid(self::ShapeCyl{T}) where {T} = (zero(T), zero(T), self.h/2)
 
 function save_vtk(self::ShapeCyl, filename; optargs...)
     gt.generate_vtk_cyl(filename, self.r, self.h; optargs...)
+    return filename*".vtk"
 end
 """
     `ShapeSphere(r::Real, units::String)`
@@ -108,6 +110,7 @@ centroid(self::ShapeSphere{T}) where {T} = (zero(T), zero(T), zero(T))
 
 function save_vtk(self::ShapeSphere, filename; optargs...)
     gt.generate_vtk_sph(filename, self.r; optargs...)
+    return filename*".vtk"
 end
 
 """
@@ -124,6 +127,7 @@ centroid(self::ShapePoint{T}) where {T} = (zero(T), zero(T), zero(T))
 
 function save_vtk(self::ShapePoint, filename; optargs...)
     gt.generate_vtk_point(filename, self.r; optargs...)
+    return filename*".vtk"
 end
 
 ##### END OF SHAPE IMPLEMENTATIONS #############################################

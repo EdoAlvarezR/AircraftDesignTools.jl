@@ -18,8 +18,10 @@ export  ShapeCuboid, ShapeCyl, ShapeSphere, ShapePoint,
         cg, mass, cgunits, massunits,
         object_from_mass,
         # Components
-        Component, System, clone,
-        displaybom
+        Component, System,
+        displaybom, save_shape,
+        # Utilities
+        rotation_matrix
 
 
 # ------------ GENERIC MODULES -------------------------------------------------
@@ -44,7 +46,7 @@ const RType = Union{Float64,                    # Concrete real types
                     }
 
 # ------------ HEADERS ---------------------------------------------------------
-for header_name in ["shapes", "objects", "components"]
+for header_name in ["shapes", "objects", "components", "utils"]
   include("AircraftDesignTools_"*header_name*".jl")
 end
 

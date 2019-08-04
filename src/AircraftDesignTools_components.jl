@@ -13,14 +13,12 @@
 # ABSTRACT COMPONENT TYPE
 ################################################################################
 """
-    `AbstractComponent{T1, T2}`
+    `AbstractComponent`
 
   Implementations of AbstractComponent are expected to have the following fields
   * `name::String`                : Name of this component
   * `subcomponents`               : Subcomponents that make this component
   * `id::Union{Int,String}`       : Component number identifier
-  * `O::Array{T1, 1}`             : Origin of object coordinate system
-  * `Oaxis::Array{T2, 2}`         : Orientation of coordinate sytem
   * `description::String`         : Useful description
   * `comments::String`            : Vent about your life here
   * `vendor::String`              : Vendor information
@@ -29,42 +27,17 @@
   and the following functions
 
 ```julia
-    "Saves a vtk file of this component"
-    save_vtk(cmp::ComponentType, file_name; path="", num=-1) = ...
+    "Saves a vtk file of this component and returns a string with file names"
+    save_shape(cmp::ComponentType, file_name; path="", num=-1) = ...
 
     "Returns the number of items that make this component"
     Base.length(cmp::ComponentType) = ...
 ```
 """
-abstract type AbstractComponent{T1, T2} end
+abstract type AbstractComponent end
 
 
 ##### COMMON FUNCTIONS  ########################################################
-"""
-    `clone(component, O, Oaxis)`
-Returns a clone of this component in the new location `O` and orientation `Oaxis`
-"""
-function clone(cmp::CompType, O::Array{T1, 1}, Oaxis::Array{T2, 2};
-                _avoid=[:name, :subcomponents, :O, :Oaxis]
-                    ) where {CompType<:AbstractComponent, T1<:RType, T2<:RType}
-
-    optargs = [(fname, getfield(cmp, fname)) for fname in fieldnames(cmp)
-                                                          if !(fname in _avoid)]
-    return CompType(cmp.name, cmp.subcomponents;
-                        O=O, Oaxis=Oaxis,
-                        optargs...)
-end
-
-"`clone(component, O)`"
-clone(cmp::AbstractComponent, O::Array{T, 1}) where T = clone(cmp, O, cmp.Oaxis)
-
-"`clone(component, Oaxis)`"
-clone(cmp::AbstractComponent, Oaxis::Array{T, 2}) where T = clone(cmp, cmp.O, Oaxis)
-
-"`clone(component)`"
-clone(cmp::AbstractComponent) = clone(cmp, cmp.O, cmp.Oaxis)
-
-
 
 """
     `getdict(cmp::AbstractComponent; format::String="simple")`
@@ -96,8 +69,6 @@ function getdict(cmp::AbstractComponent; format::String="recursive",
                                         "Name"          => cmp.name,
                                         "ID"            => cmp.id,
                                         "Subcomponents" => subcomps_str,
-                                        "O"             => cmp.O,
-                                        "Oaxis"         => cmp.Oaxis,
                                         "Description"   => cmp.description,
                                         "Comments"      => cmp.comments,
                                         "Vendor"        => cmp.vendor,
@@ -211,18 +182,17 @@ _show(io, mime, cmp::AbstractComponent; optargs...) = (
 """
     `Component(name::String, object::ObjectTypes; optargs...) <: AbstractComponent`
 
-Defines an object placed at a location and orientation in space.
+Defines an object with the location and orientation given by the shape
+definition of `object`.
 
 **OPTIONAL ARGUMENTS**
 * `id::Union{Int,String}`       : Component number identifier
-* `O::Array{Real, 1}`           : Origin of object coordinate system
-* `Oaxis::Array{Real, 2}`       : Orientation of coordinate sytem
 * `description::String`         : Useful description
 * `comments::String`            : Vent about your life here
 * `vendor::String`              : Vendor information
 * `cost::Real`                  : Cost of this component
 """
-immutable Component{T1<:RType, T2<:RType} <: AbstractComponent{T1, T2}
+immutable Component <: AbstractComponent
 
     # User inputs
     name::String                        # Name of component
@@ -230,47 +200,34 @@ immutable Component{T1<:RType, T2<:RType} <: AbstractComponent{T1, T2}
 
     # Optional inputs
     id::Union{Int,String}               # Component number identifier
-    O::Array{T1, 1}                     # Origin of object coordinate system
-    Oaxis::Array{T2, 2}                 # Orientation of coordinate sytem
     description::String                 # Useful description
     comments::String                    # Vent about your life here
     vendor::String                      # Vendor information
     cost::RType                         # Cost of this component
 
-    Component{T1,T2}(  name, subcomponents;
+    Component(  name, subcomponents;
                 id=-1,
-                O=zeros(T1, 3), Oaxis=eye(T2, 3),
                 description="", comments="", vendor="",
                 cost=0
-             ) where {T1,T2} = new(
+             ) = new(
                 name, subcomponents,
                 id,
-                O, Oaxis,
                 description, comments, vendor,
                 cost
              )
 end
 
-# Constructor that identifies parametric types automatically
-Component(name, subcomponents;
-          O::Array{T1, 1}=zeros(Float64, 3), Oaxis::Array{T2, 2}=eye(Float64, 3),
-          optargs...) where {T1, T2} = Component{T1, T2}(
-                              name, subcomponents; O=O, Oaxis=Oaxis, optargs...)
 
 """
-    `save_shape(cmp::Component, filename; optargs...)`
+    `save_shape(cmp::Component, filename; O=zeros(3), Oaxis=eye(3), optargs...)`
 
-Generates a vtk file with the shape of this component.
+Generates a vtk file with the shape of this component at origin `O` and
+orientation `Oaxis`. Returns a string with the name of the vtk file.
 """
-function save_shape(cmp::Component; prefix="", suffix="_shape",
-                                    O=zeros(Float64, 3), Oaxis=eye(Float64, 3),
-                                    optargs...)
-    save_vtk(cmp.subcomponents.shape, prefix*_name(cmp)*suffix;
-                O=gt.countertransform(cmp.O, Oaxis, O),
-                Oaxis=cmp.Oaxis*Oaxis, optargs...)
-end
+save_shape(cmp::Component; prefix="", suffix="_shape", optargs...) =
+    save_vtk(cmp.subcomponents.shape, prefix*_name(cmp)*suffix; optargs...)
 
-
+# ------------------------------------------------------------------------------
 """
     `System(name::String, components::Array{AbstractComponent, 1}; optargs...) <: AbstractComponent`
 
@@ -279,14 +236,24 @@ systems holding other systems as subcomponents.
 
 **OPTIONAL ARGUMENTS**
 * `id::Union{Int,String}`       : System number identifier
-* `O::Array{Real, 1}`           : Origin of system coordinate system
-* `Oaxis::Array{Real, 2}`       : Orientation of coordinate sytem
+* `subO::Array{Array{T1, 1}, 1}`     : Origin of subcomps coordinate systems
+* `subOaxis::Array{Array{T2, 2}, 1}` : Orientation of subcomps coordinate sytems
 * `description::String`         : Useful description
 * `comments::String`            : Vent about your life here
 * `vendor::String`              : Vendor information
+
+NOTE: `subO[i]` contains the origin of the i-th subcomponent in the coordinate
+system of the system. `subOaxis[i]` contains the orientation of the i-th
+subcomponent in the coordinate system of the system, with `subOaxis[i][j, :]`
+the direction of the j-th unitary vector. For example, a cylinder shape
+originally has centerline aligned with the z-axis with its lower face centered
+at the origin. If we wanted to center it half way its length and align its
+centerline with the x-axis we would give it `O = [-h/2, 0, 0]` and
+`Oaxis = [0 1 0; 0 0 1; 1 0 0]`
+
+SEE ROTOR POD EXAMPLE IN DOCUMENTATION.
 """
-immutable System{C<:AbstractComponent, T1<:RType, T2<:RType, T3<:RType,
-                                        T4<:RType} <: AbstractComponent{T1, T2}
+immutable System{C<:AbstractComponent, T1<:RType, T2<:RType} <: AbstractComponent
 
     # User inputs
     name::String                        # Name of component
@@ -294,29 +261,25 @@ immutable System{C<:AbstractComponent, T1<:RType, T2<:RType, T3<:RType,
 
     # Optional inputs
     id::Union{Int,String}               # Component number identifier
-    O::Array{T1, 1}                     # Origin of coordinate system
-    Oaxis::Array{T2, 2}                 # Orientation of coordinate sytem
-    subO::Array{Array{T3, 1}, 1}        # Origin of subcomps coordinate systems
-    subOaxis::Array{Array{T4, 2}, 1}    # Orientation of subcomps coordinate sytems
+    subOaxis::Array{Array{T1, 2}, 1}    # Orientation of subcomps coordinate sytems
+    subO::Array{Array{T2, 1}, 1}        # Origin of subcomps coordinate systems
     description::String                 # Useful description
     comments::String                    # Vent about your life here
     vendor::String                      # Vendor information
     cost::RType                         # Cumulative cost of subcomponents
 
-    System{C,T1,T2, T3, T4}(  name, subcomponents;
+    System{C,T1,T2}(  name, subcomponents;
                 id=-1,
-                O=zeros(T1, 3), Oaxis=eye(T2, 3),
-                subO=[zeros(T3, 3) for i in 1:length(subcomponents)],
-                subOaxis=[eye(T4, 3) for i in 1:length(subcomponents)],
+                subOaxis=[eye(T1, 3) for i in 1:length(subcomponents)],
+                subO=[zeros(T2, 3) for i in 1:length(subcomponents)],
                 description="", comments="", vendor="",
                 cost=_calc_cost(subcomponents)
-             ) where {C,T1,T2,T3,T4} = _checkO(subcomponents, subO, subOaxis) ?
+             ) where {C,T1,T2} = _checkO(subcomponents, subO, subOaxis) ?
              new(
                 name, subcomponents,
                 id,
-                O, Oaxis,
-                subO,
                 subOaxis,
+                subO,
                 description, comments, vendor,
                 cost
              ) : nothing
@@ -336,33 +299,33 @@ end
 
 # Constructor that identifies parametric types automatically
 System(name, subcomponents;
-          O::Array{T1, 1}=zeros(Float64, 3), Oaxis::Array{T2, 2}=eye(Float64, 3),
-          subO::Array{Array{T3, 1}, 1}=[zeros(Float64, 3) for i in 1:length(subcomponents)],
-          subOaxis::Array{Array{T4, 2}, 1}=[eye(Float64, 3) for i in 1:length(subcomponents)],
+          subOaxis::Array{Array{T1, 2}, 1}=[eye(Float64, 3) for i in 1:length(subcomponents)],
+          subO::Array{Array{T2, 1}, 1}=[zeros(Float64, 3) for i in 1:length(subcomponents)],
           optargs...
-      ) where {T1, T2, T3, T4} =
-      System{eltype(subcomponents), T1, T2, T3, T4}(
-                            name, subcomponents; O=O, Oaxis=Oaxis,
-                                                 subO=subO, subOaxis=subOaxis,
+      ) where {T1, T2} =
+      System{eltype(subcomponents), T1, T2}(
+                            name, subcomponents; subOaxis=subOaxis, subO=subO,
                                                                     optargs...)
 
 """
     `save_shape(cmp::System, filename; optargs...)`
 
-Generates a vtk file with the shape of all subcomponents component.
+Generates vtk files of every subcomponent, with origin `O` and orientation
+`Oaxis`. Returns a string with the names of all vtk files.
 """
 function save_shape(cmp::System; prefix="", suffix="_shape",
-                                 O=zeros(Float64, 3), Oaxis=eye(Float64, 3), optargs...)
+                                 Oaxis=eye(Float64, 3), O=zeros(Float64, 3),
+                                 optargs...)
 
-    newO = gt.countertransform(cmp.O, Oaxis, O)
-    newOaxis = cmp.Oaxis*Oaxis
-
+    str = ""
     for (i,subcmp) in enumerate(cmp.subcomponents)
-        save_shape(subcmp; prefix=prefix*_name(cmp)*"_", suffix=suffix,
-                            O=gt.countertransform(cmp.subO[i], newOaxis, newO),
-                            Oaxis=cmp.subOaxis[i]*newOaxis,
+        fname = save_shape(subcmp; prefix=prefix*_name(cmp)*"_$(i)", suffix=suffix,
+                            Oaxis=cmp.subOaxis[i]*Oaxis,
+                            O=gt.countertransform(cmp.subO[i], Oaxis', O),
                             optargs...)
+        str *= fname*";"
     end
+    return str
 end
 ##### END OF COMPONENT IMPLEMENTATIONS #########################################
 
