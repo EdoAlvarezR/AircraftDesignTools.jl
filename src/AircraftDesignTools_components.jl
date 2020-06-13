@@ -146,7 +146,7 @@ function _name(cmp::AbstractComponent; del=[" ", "-", "_", "#", ".", ",", "",
                                             ";", "~"])
     name = cmp.name
     for str in del
-        name = replace(name, str, "")
+        name = replace(name, str=>"")
     end
     return name
 end
@@ -171,6 +171,8 @@ Base.show(io::IO, cmp::AbstractComponent; optargs...) =
 Base.show(cmp::AbstractComponent; optargs...) =
     _show(io, mime, cmp; optargs...)
 
+# _show(io, mime, cmp::AbstractComponent; optargs...) = (
+#                         df = getdataframe(cmp); show(io, mime, df; allcols=true, allrows=true, splitcols=false, optargs...));
 _show(io, mime, cmp::AbstractComponent; optargs...) = (
                         df = getdataframe(cmp); show(io, mime, df; optargs...));
 ##### END OF ABSTRACT COMPONENT ################################################
@@ -192,7 +194,7 @@ definition of `object`.
 * `vendor::String`              : Vendor information
 * `cost::Real`                  : Cost of this component
 """
-immutable Component <: AbstractComponent
+struct Component <: AbstractComponent
 
     # User inputs
     name::String                        # Name of component
@@ -253,7 +255,7 @@ centerline with the x-axis we would give it `O = [-h/2, 0, 0]` and
 
 SEE ROTOR POD EXAMPLE IN DOCUMENTATION.
 """
-immutable System{C<:AbstractComponent, T1<:RType, T2<:RType} <: AbstractComponent
+struct System{C<:AbstractComponent, T1<:RType, T2<:RType} <: AbstractComponent
 
     # User inputs
     name::String                        # Name of component
@@ -270,7 +272,7 @@ immutable System{C<:AbstractComponent, T1<:RType, T2<:RType} <: AbstractComponen
 
     System{C,T1,T2}(  name, subcomponents;
                 id=-1,
-                subOaxis=[eye(T1, 3) for i in 1:length(subcomponents)],
+                subOaxis=[Array{T1}(I, 3, 3) for i in 1:length(subcomponents)],
                 subO=[zeros(T2, 3) for i in 1:length(subcomponents)],
                 description="", comments="", vendor="",
                 cost=_calc_cost(subcomponents)
@@ -299,7 +301,7 @@ end
 
 # Constructor that identifies parametric types automatically
 System(name, subcomponents;
-          subOaxis::Array{Array{T1, 2}, 1}=[eye(Float64, 3) for i in 1:length(subcomponents)],
+          subOaxis::Array{Array{T1, 2}, 1}=[Array(1.0I, 3, 3) for i in 1:length(subcomponents)],
           subO::Array{Array{T2, 1}, 1}=[zeros(Float64, 3) for i in 1:length(subcomponents)],
           optargs...
       ) where {T1, T2} =
@@ -314,14 +316,14 @@ Generates vtk files of every subcomponent, with origin `O` and orientation
 `Oaxis`. Returns a string with the names of all vtk files.
 """
 function save_shape(cmp::System; prefix="", suffix="_shape",
-                                 Oaxis=eye(Float64, 3), O=zeros(Float64, 3),
+                                 Oaxis=Array(1.0I, 3, 3), O=zeros(Float64, 3),
                                  optargs...)
 
     str = ""
     for (i,subcmp) in enumerate(cmp.subcomponents)
         fname = save_shape(subcmp; prefix=prefix*_name(cmp)*"_$(i)", suffix=suffix,
                             Oaxis=cmp.subOaxis[i]*Oaxis,
-                            O=gt.countertransform(cmp.subO[i], Oaxis', O),
+                            O=gt.countertransform(cmp.subO[i], collect(Oaxis'), O),
                             optargs...)
         str *= fname*";"
     end

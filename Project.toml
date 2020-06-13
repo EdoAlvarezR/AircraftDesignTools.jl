@@ -1,0 +1,16 @@
+name = "AircraftDesignTools"
+uuid = "a67791bf-4d1e-43bd-bd17-646bb10494c5"
+authors = ["Eduardo J. Alvarez <Edo.AlvarezR@gmail.com>"]
+version = "2.0.0"
+
+[deps]
+ForwardDiff = "f6369f11-7733-5829-9624-2563aa707210"
+DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+DataStructures = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+GeometricTools = "83792f5e-c6a1-11e8-2e0a-93511f02ae5f"
+
+
+[compat]
+julia = "1.4"
+GeometricTools = "2.0.0"

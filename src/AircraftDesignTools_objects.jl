@@ -57,11 +57,11 @@ Returns the units of mass.
 function massunits(obj::O) where {O<:AbstractObject}
     vunits = _vunits(O, obj.shape)
 
-    if contains(obj.dunits, "/"*vunits)
-        return replace(obj.dunits, "/"*vunits, "", 1)
+    if occursin("/"*vunits, obj.dunits)
+        return replace(obj.dunits, "/"*vunits=>""; count=1)
 
-    elseif contains(obj.dunits, " / "*vunits)
-        return replace(obj.dunits, " / "*vunits, "", 1)
+    elseif occursin(" / "*vunits, obj.dunits)
+        return replace(obj.dunits, " / "*vunits=>""; count=1)
 
     else
         return obj.dunits*vunits
@@ -79,7 +79,7 @@ Base.length(obj::AbstractObject) = 1
     `ObjectVol(shape, density)`
 Volumetric object with shape and mass properties assuming uniform density.
 """
-immutable ObjectVol{S<:ShapeTypes, R<:RType} <: AbstractObject{S, R}
+struct ObjectVol{S<:ShapeTypes, R<:RType} <: AbstractObject{S, R}
     shape::S
     density::R
     dunits::String
@@ -94,7 +94,7 @@ _vunits(::Type{O}, shape::S) where {O<:ObjectVol, S<:ShapeTypes} = volumeunits(s
 Surface object with shape and mass properties assuming uniform area-based
 density.
 """
-immutable ObjectSurf{S<:ShapeTypes, R<:RType} <: AbstractObject{S, R}
+struct ObjectSurf{S<:ShapeTypes, R<:RType} <: AbstractObject{S, R}
     shape::S
     density::R
     dunits::String
@@ -109,7 +109,7 @@ _vunits(::Type{O}, shape::S) where {O<:ObjectSurf, S<:ShapeTypes} = areaunits(sh
     `ObjectPoint(mass)`
 A volume-less point object.
 """
-immutable ObjectPoint{S<:ShapeTypes, R<:RType} <: AbstractObject{S, R}
+struct ObjectPoint{S<:ShapeTypes, R<:RType} <: AbstractObject{S, R}
     shape::S
     density::R
     dunits::String

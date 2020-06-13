@@ -56,7 +56,7 @@ centroidunits(shape::AbstractShape) = shape.units
     `ShapeCuboid(x1::Real, x2::Real, x3::Real, units::String)`
 Cuboid shape formed by six parallelograms (3D rectangle)
 """
-immutable ShapeCuboid{T<:Real} <: AbstractShape{T}
+struct ShapeCuboid{T<:Real} <: AbstractShape{T}
     x1::T
     x2::T
     x3::T
@@ -79,7 +79,7 @@ end
     `ShapeCyl(r::Real, h::Real, units::String)`
 Cylindrical shape
 """
-immutable ShapeCyl{T<:Real} <: AbstractShape{T}
+struct ShapeCyl{T<:Real} <: AbstractShape{T}
     r::T
     h::T
     units::String
@@ -101,7 +101,7 @@ end
     `ShapeSphere(r::Real, units::String)`
 Spherical shape
 """
-immutable ShapeSphere{T<:Real} <: AbstractShape{T}
+struct ShapeSphere{T<:Real} <: AbstractShape{T}
     r::T
     units::String
 end
@@ -121,7 +121,7 @@ end
     `ShapePoint(units::String)`
 A volume-less point
 """
-immutable ShapePoint{T<:Real} <: AbstractShape{T}
+struct ShapePoint{T<:Real} <: AbstractShape{T}
     units::String
 end
 ShapePoint() = ShapePoint{Float64}("")
@@ -140,7 +140,7 @@ end
 Arbitrary shape created as a surface grid of triangular cells through
 `GeometricTools` package.
 """
-immutable ShapeSurfGrid{T} <: AbstractShape{T}
+struct ShapeSurfGrid{T} <: AbstractShape{T}
     grid::gt.GridTriangleSurface
     units::String
 end

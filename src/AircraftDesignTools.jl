@@ -28,6 +28,7 @@ export  ShapeCuboid, ShapeCyl, ShapeSphere, ShapePoint, ShapeSurfGrid,
 import ForwardDiff
 import DataFrames
 import DataStructures.OrderedDict
+import LinearAlgebra: norm, dot, cross, I
 
 # ------------ FLOW LAB MODULES ------------------------------------------------
 
@@ -41,8 +42,8 @@ const module_path = splitdir(@__FILE__)[1]      # Path to this module
 
 const RType = Union{Float64,                    # Concrete real types
                     Int64,
-                    ForwardDiff.Dual{Void,Float64,3},
-                    ForwardDiff.Dual{Void,Int64,3}
+                    ForwardDiff.Dual{Nothing,Float64,3},
+                    ForwardDiff.Dual{Nothing,Int64,3}
                     }
 
 # ------------ HEADERS ---------------------------------------------------------
